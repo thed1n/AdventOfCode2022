@@ -24,14 +24,14 @@ foreach ($d in $data) {
 $points2 = 0
 for ($i = 0; $i -le $data.count-3 ; $i+=3) {
 
-    [HashSet[char]]$elve1 = $data[$i].ToCharArray()
-    [HashSet[char]]$elve2 = $data[$i+1].ToCharArray()
-    [HashSet[char]]$elve3 = $data[$i+2].ToCharArray()
+    [HashSet[char]]$elf1 = $data[$i].ToCharArray()
+    [HashSet[char]]$elf2 = $data[$i+1].ToCharArray()
+    [HashSet[char]]$elf3 = $data[$i+2].ToCharArray()
 
-    $elve2.IntersectWith($elve1)
-    $elve3.IntersectWith($elve2)
+    $elf2.IntersectWith($elf1)
+    $elf3.IntersectWith($elf2)
 
-    $char = $elve3.GetEnumerator() | ForEach-Object { $_ }
+    $char = $elf3.GetEnumerator() | ForEach-Object { $_ }
     
     if ([int]$char -ge 97 -and [int]$char -le 122) {
         #is lowercase
