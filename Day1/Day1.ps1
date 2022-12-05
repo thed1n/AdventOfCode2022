@@ -8,8 +8,6 @@ foreach ($d in $data) {
     $santa[$i]+=[int]$d
 }
 
-
-
 [pscustomobject]@{
 part1 = $santa.values|sort -Descending|select -first 1
 part2 = $santa.values|sort -Descending|select -first 3 | Measure-Object -sum | % sum
