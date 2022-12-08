@@ -1,6 +1,5 @@
 using namespace System.Collections.Generic
 $data = Get-Content .\Day8\Input8.txt
-
 #$data = Get-Content .\Day8\test8.txt
 
 function drawtree {
@@ -67,7 +66,7 @@ function find-visibletreerange {
     )
     #use the defined array as readonly
     [int]$singleTree = $trees[$vertical, $horizontal]
-    $ranges =@{}
+    $ranges =[ordered]@{}
     #check left
     [int]$left = 0
     for ($h = $horizontal - 1; $h -ge 0 ; $h--) {
@@ -123,6 +122,7 @@ function find-visibletreerange {
     }
     $ranges['down'] = $down
 
+    $ranges['sum'] = $left*$right*$up*$down
     return [pscustomobject]$ranges
 }
 
@@ -134,13 +134,10 @@ $trees = [int[,]]::new($($data.count), $($data[0].Length))
 
 #vertical
 for ($v = 0; $v -lt $data.count; $v++) {
-
     #horisontal
     for ($h = 0; $h -lt $data[0].Length; $h++) {
         $trees[$v, $h] = [int]$data[$v][$h]-48 #char to int
     }
-
-    <# Action that will repeat until the condition is met #>
 }
 
 $sum=0
@@ -148,25 +145,20 @@ $sum=0
 for ($v = 1; $v -lt $data.count-1; $v++) {
     #horisontal
     for ($h = 1; $h -lt $data[0].Length-1; $h++) {
-        #write-host "$($trees[$v,$h])" -NoNewline
-        #write-host " $(find-visibletree -v $v -h $h)"-ForegroundColor Green
         $sum += find-visibletree -v $v -h $h
     }
 }
 
-for ($v = 0; $v -lt $data.count-1; $v++) {
-    #horisental
+$treeranges = for ($v = 0; $v -lt $data.count-1; $v++) {
+    #horisontal
     for ($h = 0; $h -lt $data[0].Length-1; $h++) {
-        find-visibletree -v $v -h $h
+        find-visibletreerange -v $v -h $h
     }
 }
 
+[SortedSet[int]]$maxrange = $treeranges.sum
+
 [pscustomobject]@{
 Part1 = $sum + $outside
+Part2 = $maxrange.max
 }
-
-
-
-drawtree -trees $trees
-find-visibletree -v 2 -h 2
-find-visibletreerange -v 3 -h 2
