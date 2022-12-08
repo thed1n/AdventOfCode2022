@@ -58,6 +58,38 @@ function find-visibletree {
         return 1
     }
 }
+
+function part1_supercharged {
+    param (
+        [int]$tree,
+        [int]$horizontal,
+        [int]$vertical,
+        [string]$direction,
+        [switch]$start
+    )
+    
+    write-verbose "$vertical $horizontal $direction"
+    if ($start) {
+    [int]$singleTree = $trees[$vertical, $horizontal]
+    write-verbose $singleTree
+    part1_supercharged -vertical $($vertical+1) -horizontal $horizontal -direction 'down' -tree $singleTree
+    part1_supercharged -vertical $($vertical-1) -horizontal $horizontal -direction 'up' -tree $singleTree
+    part1_supercharged -vertical $vertical -horizontal $($horizontal-1) -direction 'left' -tree $singleTree
+    part1_supercharged -vertical $vertical -horizontal $($horizontal+1) -direction 'right' -tree $singleTree
+    }
+
+    if ($vertical -lt 0 -or $vertical -ge $trees.GetLength(0) -or $horizontal -lt 0 -or $horizontal -ge $trees.GetLength(1)) {
+        write-verbose 'return 1'
+        return 1}
+    if ($trees[$vertical, $horizontal] -ge $tree) {write-verbose 'return blank'; return}
+    switch ($direction) {
+        'down' {part1_supercharged -vertical (++$vertical) -horizontal $horizontal -direction 'down' -tree $singleTree}
+        'up' {part1_supercharged -vertical (--$vertical) -horizontal $horizontal -direction 'up' -tree $singleTree}
+        'left' {part1_supercharged -vertical $vertical -horizontal (--$horizontal) -direction 'left' -tree $singleTree}
+        'right' {part1_supercharged -vertical $vertical -horizontal (++$horizontal) -direction 'right' -tree $singleTree}
+    }
+}
+
 function find-visibletreerange {
     param (
         #[array]$trees,
@@ -126,6 +158,60 @@ function find-visibletreerange {
     return [pscustomobject]$ranges
 }
 
+function find-visibletree2 {
+    param (
+        #[array]$trees,
+        [int]$horizontal,
+        [int]$vertical
+    )
+    #use the defined array as readonly
+    [int]$singleTree = $trees[$vertical, $horizontal]
+
+    #check left
+
+    $free = 0
+    for ($h = $horizontal - 1; $h -ge 0 ; $h--) {
+        if ($trees[$vertical, $h] -ge $singletree ) {
+            $free = 1
+            break
+        }
+    }
+    if ($free -eq 0) {return 1}
+    
+    #right
+
+    $free = 0
+    for ($h = $horizontal + 1; $h -lt $trees.GetLength(1); $h++) {
+        if ($trees[$vertical, $h] -ge $singletree ) {
+            $free = 1
+            break
+        }
+    }
+    if ($free -eq 0) {return 1}
+
+    #up
+
+    $free = 0
+    for ($v = $vertical - 1; $v -ge 0; $v--) {
+        if ($trees[$v, $horizontal] -ge $singletree ) {
+            $free = 1
+            break 
+    }}
+    if ($free -eq 0) {return 1}
+
+    #down
+
+    $free = 0
+    for ($v = $vertical + 1; $v -lt $trees.GetLength(0); $v++) {
+        if ($trees[$v, $horizontal] -ge $singletree ) {
+            $free = 1
+            break
+        }
+    }
+    if ($free -eq 0) {return 1}
+
+}
+
 [int]$outside = ($data.count + $data[0].Length) * 2 - 4 #-4 for the corners
 
 $trees = [int[,]]::new($($data.count), $($data[0].Length))
@@ -140,14 +226,29 @@ for ($v = 0; $v -lt $data.count; $v++) {
     }
 }
 
+#old part 1
+<#
 $sum=0
 #find the inner trees
 for ($v = 1; $v -lt $data.count-1; $v++) {
     #horisontal
     for ($h = 1; $h -lt $data[0].Length-1; $h++) {
-        $sum += find-visibletree -v $v -h $h
+        $sum += find-visibletree -v $v -h $h 
     }
 }
+#>
+
+
+
+$sum = 0
+for ($v = 0; $v -lt $data.count; $v++) {
+    #horisontal
+    for ($h = 0; $h -lt $data[0].Length; $h++) {
+        $sum += find-visibletree2 -v $v -h $h
+    }
+}
+
+$sum
 
 $treeranges = for ($v = 0; $v -lt $data.count-1; $v++) {
     #horisontal
@@ -159,6 +260,6 @@ $treeranges = for ($v = 0; $v -lt $data.count-1; $v++) {
 [SortedSet[int]]$maxrange = $treeranges.sum
 
 [pscustomobject]@{
-Part1 = $sum + $outside
+Part1 = $sum2
 Part2 = $maxrange.max
 }
