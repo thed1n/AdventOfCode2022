@@ -99,3 +99,6 @@ $sizeNeeded = [math]::abs((70000000 - $structure['\'].totalsize) - 30000000)
     Part1 = $sum
     Part2 = $sum2.min
 }
+
+#Draw structure
+#$structure.keys | ForEach-Object { $structure[$_] } | Select-Object node, size, totalsize | Sort-Object node
