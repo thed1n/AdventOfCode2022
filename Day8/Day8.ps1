@@ -59,37 +59,6 @@ function find-visibletree {
     }
 }
 
-function part1_supercharged {
-    param (
-        [int]$tree,
-        [int]$horizontal,
-        [int]$vertical,
-        [string]$direction,
-        [switch]$start
-    )
-    
-    write-verbose "$vertical $horizontal $direction"
-    if ($start) {
-    [int]$singleTree = $trees[$vertical, $horizontal]
-    write-verbose $singleTree
-    part1_supercharged -vertical $($vertical+1) -horizontal $horizontal -direction 'down' -tree $singleTree
-    part1_supercharged -vertical $($vertical-1) -horizontal $horizontal -direction 'up' -tree $singleTree
-    part1_supercharged -vertical $vertical -horizontal $($horizontal-1) -direction 'left' -tree $singleTree
-    part1_supercharged -vertical $vertical -horizontal $($horizontal+1) -direction 'right' -tree $singleTree
-    }
-
-    if ($vertical -lt 0 -or $vertical -ge $trees.GetLength(0) -or $horizontal -lt 0 -or $horizontal -ge $trees.GetLength(1)) {
-        write-verbose 'return 1'
-        return 1}
-    if ($trees[$vertical, $horizontal] -ge $tree) {write-verbose 'return blank'; return}
-    switch ($direction) {
-        'down' {part1_supercharged -vertical (++$vertical) -horizontal $horizontal -direction 'down' -tree $singleTree}
-        'up' {part1_supercharged -vertical (--$vertical) -horizontal $horizontal -direction 'up' -tree $singleTree}
-        'left' {part1_supercharged -vertical $vertical -horizontal (--$horizontal) -direction 'left' -tree $singleTree}
-        'right' {part1_supercharged -vertical $vertical -horizontal (++$horizontal) -direction 'right' -tree $singleTree}
-    }
-}
-
 function find-visibletreerange {
     param (
         #[array]$trees,
@@ -212,7 +181,7 @@ function find-visibletree2 {
 
 }
 
-[int]$outside = ($data.count + $data[0].Length) * 2 - 4 #-4 for the corners
+#[int]$outside = ($data.count + $data[0].Length) * 2 - 4 #-4 for the corners
 
 $trees = [int[,]]::new($($data.count), $($data[0].Length))
 
