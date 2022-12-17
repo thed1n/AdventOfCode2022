@@ -33,7 +33,35 @@ function drawgrid {
     }
 
 }
+function drawcave {
+    param(
+        [int]$x,
+        [int]$xto,
+        [int]$y,
+        [int]$yto,
+        $othergrid
+    )
 
+    if ($PSBoundParameters.ContainsKey('othergrid')) {
+        $grid = $othergrid
+    }
+
+    for ($v = $y; $v -lt $yto; $v++) {
+        #horisontal
+        for ($h = $x; $h -lt $xto; $h++) {
+
+            if ($grid.containskey("$h,$v")) {
+            Write-Host $grid["$h,$v"] -NoNewline
+            }
+            else {
+                Write-Host '.' -NoNewline
+            }
+            
+        }
+        Write-Host ''
+    }
+
+}
 function drop-sand {
     param (
         $start,
@@ -169,7 +197,7 @@ $rocks.keys | % {
             if ($y -ne $y2) {
                 $y..$y2 | % {
                     $grid["$x,$_"]= '#'
-                    $grid2["$_,$y"]= '#'
+                    $grid2["$x,$_"]= '#' #forgot to change this for part2 facepalm so it was a copy of $x vector
                 }
             }
             [void]$ycords.add($y)
@@ -193,8 +221,16 @@ drawgrid -x $($xcords.min-4) -xto $($xcords.max+4) -y 0 -yto $($ycords.max+2)
 }
 
 $result2 = drop-sandOnHardFloor -end $($ycords.max+2)
-drawgrid -x $($xcords.min-20) -xto $($xcords.max+20) -y 0 -yto $($ycords.max+3) -othergrid $grid2
+#drawgrid -x $($xcords.min-40) -xto $($xcords.max+180) -y 0 -yto $($ycords.max+3) -othergrid $grid2
+drawcave -x $($xcords.min-40) -xto $($xcords.max+180) -y 0 -yto $($ycords.max+3) -othergrid $grid2
 
+$sum = 0
+$grid2.Keys|% {
+    if ($grid2[$_] -eq 'o') {
+        $sum++
+    }
+}
+$sum
 [pscustomobject]@{
     Part1 = $result
     Part2 = $result2
